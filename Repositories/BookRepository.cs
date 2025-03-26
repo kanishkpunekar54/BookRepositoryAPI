@@ -6,26 +6,51 @@ namespace BookRepositoryAPI.Repositories
     {
         private readonly List<Book> _books = new();
         private int _nextId = 1;
-        public IEnumerable<Book> GetAllBooks() => _books;
 
-        public Book GetBookById(int id) => _books.FirstOrDefault(b => b.Id == id);
+        public virtual IEnumerable<Book> GetAllBooks()
+        {
+            return _books;
+        }
 
-        public void AddBook(Book book)
+        public virtual Book GetBookById(int id)
+        {
+            return _books.FirstOrDefault(b => b.Id == id);
+        }
+
+        public virtual void AddBook(Book book)
         {
             book.Id = _nextId++;
             _books.Add(book);
         }
-        public bool UpdateBook(int id, Book updatedBook)
+
+        public virtual bool UpdateBook(int id, Book updatedBook)
         {
-            var index = _books.FindIndex(b => b.Id == id);
-            if (index == -1)
+            var book = _books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
             {
                 return false;
             }
-            updatedBook.Id = id;
-            _books[index] = updatedBook;
+
+            book.Title = updatedBook.Title;
+            book.Author = updatedBook.Author;
+            book.Year = updatedBook.Year;
+            book.Publisher = updatedBook.Publisher;
+            book.Price = updatedBook.Price;
+
             return true;
         }
-        public bool DeleteBook(int id) => _books.RemoveAll(b => b.Id == id) > 0;
+
+        public virtual bool DeleteBook(int id)
+        {
+            var book = _books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
+            {
+                return false;
+            }
+
+            _books.Remove(book);
+            return true;
+        }
     }
+
 }
